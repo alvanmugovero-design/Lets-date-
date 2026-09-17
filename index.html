@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b3d91">
+<meta name="description" content="Let's Date — a simple private date-request web app.">
+<link rel="manifest" href="manifest.json">
+<title>Let's Date ❤️</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100%;font-family:Arial,sans-serif;}
+body{overflow-x:hidden;}
+#leftCurtain,#rightCurtain{
+ position:fixed;top:0;width:50%;height:100vh;z-index:99999;
+ background:linear-gradient(90deg,#061a40,#0b3d91,#155dcc,#08265d);
+ transition:transform 4s cubic-bezier(.65,0,.35,1);
+ display:flex;align-items:center;justify-content:center;
+ overflow:hidden;pointer-events:none;
+}
+#leftCurtain{left:0;} #rightCurtain{right:0;}
+#leftCurtain.open{transform:translateX(-100%);}
+#rightCurtain.open{transform:translateX(100%);}
+.curtainWord{
+ position:absolute;top:50%;transform:translateY(-50%);
+ color:white;font-weight:bold;font-size:clamp(20px,4vw,55px);
+ letter-spacing:2px;white-space:nowrap;text-shadow:0 3px 10px rgba(0,0,0,.5);
+}
+.leftWord{right:20px;text-align:right;}
+.rightWord{left:20px;text-align:left;}
+.page{
+ display:none;width:100%;min-height:100vh;padding:30px 15px;
+ background-size:cover;background-position:center;position:relative;
+}
+.page.active{display:flex;align-items:center;justify-content:center;}
+.page::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.42);}
+.content{
+ position:relative;z-index:2;width:100%;max-width:600px;padding:30px;
+ background:rgba(255,255,255,.95);border-radius:25px;
+ box-shadow:0 15px 40px rgba(0,0,0,.35);text-align:center;
+}
+h1{color:#111;margin-bottom:15px;font-size:clamp(30px,7vw,48px);}
+h2{color:#222;margin-bottom:15px;}
+p{color:#333;line-height:1.6;margin-bottom:15px;}
+button{border:none;border-radius:12px;padding:14px 22px;font-size:16px;font-weight:bold;cursor:pointer;margin:6px;transition:.2s;}
+button:hover{transform:translateY(-2px);}
+.primary{background:#0b5ed7;color:white;}
+.success{background:#198754;color:white;}
+.danger{background:#dc3545;color:white;}
+.secondary{background:#6c757d;color:white;}
+.copy{background:#343a40;color:white;}
+.form-group{text-align:left;margin-bottom:15px;}
+label{display:block;margin-bottom:7px;font-weight:bold;color:#222;}
+input,textarea{width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;outline:none;}
+input:focus,textarea:focus{border-color:#0b5ed7;box-shadow:0 0 0 2px rgba(11,94,215,.15);}
+textarea{min-height:110px;resize:vertical;}
+.link-box{margin-top:20px;padding:15px;background:#f1f3f5;border-radius:12px;word-break:break-all;text-align:left;}
+.link-box strong{display:block;margin-bottom:8px;}
+#generatedLink{color:#0b5ed7;}
+.summary{background:#f8f9fa;border-radius:15px;padding:20px;text-align:left;margin:20px 0;}
+.summary p{margin-bottom:8px;}
+.summary strong{color:#111;}
+.install-box{margin-top:18px;padding:14px;background:#eaf2ff;border-radius:12px;color:#123;text-align:center;}
+#page1{background-image:url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1600&q=85");}
+#page2{background-image:url("https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1600&q=85");}
+#page3{background-image:url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=85");}
+#page4{background-image:url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=85");}
+@media(max-width:500px){
+ .content{padding:22px 17px;border-radius:20px;}
+ button{width:100%;margin:6px 0;}
+ .curtainWord{font-size:20px;}
+ .leftWord{right:8px;} .rightWord{left:8px;}
+}
+</style>
+</head>
+<body>
+
+<div id="leftCurtain"><div class="curtainWord leftWord">AND SO,</div></div>
+<div id="rightCurtain"><div class="curtainWord rightWord">THE STORY BEGINS… ✨</div></div>
+
+<section id="page1" class="page active">
+<div class="content">
+<h1>Let's Date ❤️</h1>
+<p>Sometimes one simple question can begin a beautiful story.</p>
+<p>So... why not ask?</p>
+<button class="primary" onclick="goToPage(2)">Start a Date Request 💌</button>
+<div class="install-box" id="installBox" style="display:none;">
+<p><strong>Install Let's Date 📲</strong></p>
+<button class="primary" id="installButton" onclick="installApp()">Install App</button>
+</div>
+</div>
+</section>
+
+<section id="page2" class="page">
+<div class="content">
+<h2>Create Your Date Request 💌</h2>
+<p>Fill in the details and create your private date-request link.</p>
+<div class="form-group"><label for="fromName">Your Name</label><input type="text" id="fromName" placeholder="Enter your name"></div>
+<div class="form-group"><label for="toName">Their Name</label><input type="text" id="toName" placeholder="Enter their name"></div>
+<div class="form-group"><label for="phone">Their WhatsApp Number</label><input type="tel" id="phone" placeholder="Example: 0712345678 or 254712345678"></div>
+<div class="form-group"><label for="requestMessage">Your Message</label><textarea id="requestMessage" placeholder="Write your date invitation..."></textarea></div>
+<button class="primary" onclick="createRequest()">Create Request ❤️</button>
+<button class="secondary" onclick="goToPage(1)">Back</button>
+<div id="requestResult" style="display:none;">
+<div class="link-box"><strong>Your Date Request Link:</strong><div id="generatedLink"></div></div>
+<button class="primary" onclick="copyRequestLink()">Copy Link 🔗</button>
+<button class="success" onclick="openWhatsAppWeb()">Open WhatsApp Web 💬</button>
+<button class="copy" onclick="copyRequestMessage()">Copy WhatsApp Message 📋</button>
+</div>
+</div>
+</section>
+
+<section id="page3" class="page">
+<div class="content">
+<h2>Request Ready ❤️</h2>
+<p>Your date request has been created.</p>
+<div class="summary">
+<p><strong>From:</strong> <span id="summaryFrom"></span></p>
+<p><strong>To:</strong> <span id="summaryTo"></span></p>
+<p><strong>Message:</strong> <span id="summaryMessage"></span></p>
+</div>
+<button class="primary" onclick="copyRequestLink()">Copy Request Link 🔗</button>
+<button class="success" onclick="openWhatsAppWeb()">Open WhatsApp Web 💬</button>
+<button class="copy" onclick="copyRequestMessage()">Copy WhatsApp Message 📋</button>
+<button class="secondary" onclick="goToPage(2)">Create Another Request</button>
+</div>
+</section>
+
+<section id="page4" class="page">
+<div class="content">
+<h2 id="recipientTitle">You Have a Date Request ❤️</h2>
+<div class="summary">
+<p><strong>From:</strong> <span id="recipientFrom"></span></p>
+<p><strong>Message:</strong> <span id="recipientMessage"></span></p>
+</div>
+<div id="responseButtons">
+<p>Would you like to go on this date?</p>
+<button class="success" onclick="showAcceptanceForm()">YES ❤️</button>
+<button class="danger" onclick="declineDate()">NO</button>
+</div>
+
+<div id="acceptanceForm" style="display:none;">
+<h2>Plan the Date 🥰</h2>
+<p>Choose the details for your date.</p>
+<div class="form-group"><label for="date">Date</label><input type="date" id="date"></div>
+<div class="form-group"><label for="time">Time</label><input type="time" id="time"></div>
+<div class="form-group"><label for="meetingPlace">Meeting Place 📍</label><input type="text" id="meetingPlace" placeholder="Example: Sarit Centre"></div>
+<div class="form-group"><label for="meal">Meal / Activity 🍽️</label><input type="text" id="meal" placeholder="Example: Lunch, coffee, movie..."></div>
+<div class="form-group"><label for="additionalMessage">Additional Message</label><textarea id="additionalMessage" placeholder="Anything else you want to say?"></textarea></div>
+<button class="success" onclick="prepareAcceptance()">Confirm Date ❤️</button>
+<button class="secondary" onclick="cancelAcceptance()">Back</button>
+</div>
+
+<div id="responseSent" style="display:none;">
+<h2>Date Confirmed ❤️</h2>
+<p>Your response is ready.</p>
+<button class="success" onclick="openResponseWhatsAppWeb()">Open WhatsApp Web 💬</button>
+<button class="copy" onclick="copyResponseMessage()">Copy Response 📋</button>
+</div>
+</div>
+</section>
+
+<script>
+let requestData=null;
+let requestLink="";
+let requestMessageForWhatsApp="";
+let lastResponseText="";
+let lastResponsePhone="";
+let deferredInstallPrompt=null;
+
+function openCurtains(){
+ const left=document.getElementById("leftCurtain");
+ const right=document.getElementById("rightCurtain");
+ if(left) left.classList.add("open");
+ if(right) right.classList.add("open");
+}
+function closeCurtains(){
+ const left=document.getElementById("leftCurtain");
+ const right=document.getElementById("rightCurtain");
+ if(left) left.classList.remove("open");
+ if(right) right.classList.remove("open");
+}
+function goToPage(number){
+ closeCurtains();
+ setTimeout(function(){
+  document.querySelectorAll(".page").forEach(function(page){page.classList.remove("active");});
+  const target=document.getElementById("page"+number);
+  if(target) target.classList.add("active");
+  setTimeout(function(){openCurtains();},300);
+ },4000);
+}
+function cleanPhoneNumber(phone){
+ phone=String(phone).trim();
+ phone=phone.replace(/\s+/g,"").replace(/-/g,"").replace(/\(/g,"").replace(/\)/g,"");
+ if(phone.startsWith("+")) phone=phone.substring(1);
+ if(phone.startsWith("0")) phone="254"+phone.substring(1);
+ return phone;
+}
+function createRequest(){
+ const fromName=document.getElementById("fromName").value.trim();
+ const toName=document.getElementById("toName").value.trim();
+ const phoneInput=document.getElementById("phone").value.trim();
+ const message=document.getElementById("requestMessage").value.trim();
+
+ if(!fromName){alert("Please enter your name.");return;}
+ if(!toName){alert("Please enter their name.");return;}
+ if(!phoneInput){alert("Please enter their WhatsApp number.");return;}
+ if(!message){alert("Please write your message.");return;}
+
+ const phone=cleanPhoneNumber(phoneInput);
+ if(!/^[0-9]{10,15}$/.test(phone)){
+  alert("Please enter a valid WhatsApp number.\n\nExample: 254712345678");
+  return;
+ }
+
+ requestData={from:fromName,to:toName,phone:phone,message:message};
+ const baseURL=window.location.href.split("?")[0];
+
+ requestLink=baseURL+
+ "?request=1"+
+ "&from="+encodeURIComponent(fromName)+
+ "&to="+encodeURIComponent(toName)+
+ "&phone="+encodeURIComponent(phone)+
+ "&message="+encodeURIComponent(message);
+
+ requestMessageForWhatsApp=
+ "❤️ LET'S DATE ❤️\n\n"+
+ "Hello "+toName+" 😊\n\n"+
+ fromName+" has sent you a date request.\n\n"+
+ "MESSAGE:\n"+message+
+ "\n\nOpen this link to respond:\n"+requestLink;
+
+ localStorage.setItem("letsDateRequest",JSON.stringify(requestData));
+
+ document.getElementById("generatedLink").textContent=requestLink;
+ document.getElementById("summaryFrom").textContent=fromName;
+ document.getElementById("summaryTo").textContent=toName;
+ document.getElementById("summaryMessage").textContent=message;
+ document.getElementById("requestResult").style.display="block";
+ goToPage(3);
+}
+
+async function copyRequestLink(){
+ if(!requestLink){alert("Please create a request first.");return;}
+ await copyText(requestLink,"Request link copied! 🔗");
+}
+async function copyRequestMessage(){
+ if(!requestMessageForWhatsApp && requestData){
+  requestMessageForWhatsApp=
+   "❤️ LET'S DATE ❤️\n\nHello "+requestData.to+" 😊\n\n"+
+   requestData.from+" has sent you a date request.\n\nMESSAGE:\n"+
+   requestData.message+"\n\nOpen this link to respond:\n"+requestLink;
+ }
+ if(!requestMessageForWhatsApp){alert("Please create a request first.");return;}
+ await copyText(requestMessageForWhatsApp,"WhatsApp message copied! 📋\n\nOpen WhatsApp and paste it.");
+}
+function openWhatsAppWeb(){
+ if(!requestData){
+  const saved=localStorage.getItem("letsDateRequest");
+  if(saved) requestData=JSON.parse(saved);
+ }
+ if(!requestData){alert("Please create a request first.");return;}
+ if(!requestMessageForWhatsApp){
+  requestMessageForWhatsApp=
+   "❤️ LET'S DATE ❤️\n\nHello "+requestData.to+" 😊\n\n"+
+   requestData.from+" has sent you a date request.\n\nMESSAGE:\n"+
+   requestData.message+"\n\nOpen this link to respond:\n"+requestLink;
+ }
+ const url="https://web.whatsapp.com/send?phone="+requestData.phone+
+           "&text="+encodeURIComponent(requestMessageForWhatsApp);
+ window.open(url,"_blank");
+}
+function loadURLRequest(){
+ const params=new URLSearchParams(window.location.search);
+ if(params.get("request")!=="1") return false;
+ const from=params.get("from")||"";
+ const to=params.get("to")||"";
+ const phone=params.get("phone")||"";
+ const message=params.get("message")||"";
+ if(!from || !phone) return false;
+
+ requestData={from:from,to:to,phone:cleanPhoneNumber(phone),message:message};
+ document.getElementById("recipientFrom").textContent=from;
+ document.getElementById("recipientMessage").textContent=message;
+ document.getElementById("recipientTitle").textContent="Date Request From "+from+" ❤️";
+ lastResponsePhone=cleanPhoneNumber(phone);
+ return true;
+}
+function showAcceptanceForm(){
+ document.getElementById("responseButtons").style.display="none";
+ document.getElementById("acceptanceForm").style.display="block";
+ document.getElementById("responseSent").style.display="none";
+}
+function cancelAcceptance(){
+ document.getElementById("acceptanceForm").style.display="none";
+ document.getElementById("responseButtons").style.display="block";
+}
+function declineDate(){
+ if(!requestData){alert("The request information could not be found.");return;}
+ const message="Hello "+requestData.from+" ❤️\n\n"+
+ "Thank you for the date invitation.\n\nMy response is NO for now.\n\n"+
+ "I wish you all the best. 😊";
+ copyText(message,"Decline message copied! 📋\n\nOpen WhatsApp and paste it.");
+}
+function prepareAcceptance(){
+ if(!requestData){alert("The request information could not be found.");return;}
+ const date=document.getElementById("date").value.trim();
+ const time=document.getElementById("time").value.trim();
+ const meetingPlace=document.getElementById("meetingPlace").value.trim();
+ const meal=document.getElementById("meal").value.trim();
+ const additionalMessage=document.getElementById("additionalMessage").value.trim();
+
+ if(!date){alert("Please choose the date.");return;}
+ if(!time){alert("Please choose the time.");return;}
+ if(!meetingPlace){alert("Please enter the meeting place.");return;}
+ if(!meal){alert("Please enter the meal or activity.");return;}
+
+ let formattedDate=date;
+ try{
+  const dateObject=new Date(date+"T00:00:00");
+  formattedDate=dateObject.toLocaleDateString("en-KE",{
+   weekday:"long",year:"numeric",month:"long",day:"numeric"
+  });
+ }catch(error){}
+
+ let message="❤️ DATE ACCEPTED ❤️\n\nHello "+requestData.from+" 😊\n\n"+
+ "I accept the date invitation!\n\nDATE:\n"+formattedDate+
+ "\n\nTIME:\n"+time+"\n\nMEETING PLACE:\n"+meetingPlace+
+ "\n\nMEAL / ACTIVITY:\n"+meal;
+ if(additionalMessage) message+="\n\nADDITIONAL MESSAGE:\n"+additionalMessage;
+ message+="\n\nSee you then ❤️";
+
+ lastResponseText=message;
+ lastResponsePhone=requestData.phone;
+ localStorage.setItem("letsDateResponse",JSON.stringify({message:message,phone:requestData.phone}));
+ document.getElementById("acceptanceForm").style.display="none";
+ document.getElementById("responseSent").style.display="block";
+}
+function openResponseWhatsAppWeb(){
+ if(!lastResponseText || !lastResponsePhone){
+  const saved=localStorage.getItem("letsDateResponse");
+  if(saved){
+   const data=JSON.parse(saved);
+   lastResponseText=data.message; lastResponsePhone=data.phone;
+  }
+ }
+ if(!lastResponseText || !lastResponsePhone){alert("There is no response to send.");return;}
+ const url="https://web.whatsapp.com/send?phone="+lastResponsePhone+
+           "&text="+encodeURIComponent(lastResponseText);
+ window.open(url,"_blank");
+}
+function copyResponseMessage(){
+ if(!lastResponseText){
+  const saved=localStorage.getItem("letsDateResponse");
+  if(saved){const data=JSON.parse(saved);lastResponseText=data.message;}
+ }
+ if(!lastResponseText){alert("There is no response to copy.");return;}
+ copyText(lastResponseText,"Date response copied! 📋\n\nOpen WhatsApp and paste it.");
+}
+async function copyText(text,successMessage){
+ try{await navigator.clipboard.writeText(text);}
+ catch(error){
+  const temporary=document.createElement("textarea");
+  temporary.value=text;document.body.appendChild(temporary);
+  temporary.select();document.execCommand("copy");temporary.remove();
+ }
+ alert(successMessage);
+}
+
+/* PWA installation */
+window.addEventListener("beforeinstallprompt",function(event){
+ event.preventDefault();
+ deferredInstallPrompt=event;
+ document.getElementById("installBox").style.display="block";
+});
+async function installApp(){
+ if(!deferredInstallPrompt){
+  alert("If the Install button is not available, open this site in Chrome and use the browser menu → Add to Home screen.");
+  return;
+ }
+ deferredInstallPrompt.prompt();
+ await deferredInstallPrompt.userChoice;
+ deferredInstallPrompt=null;
+ document.getElementById("installBox").style.display="none";
+}
+window.addEventListener("appinstalled",function(){
+ document.getElementById("installBox").style.display="none";
+});
+
+if("serviceWorker" in navigator){
+ window.addEventListener("load",function(){
+  navigator.serviceWorker.register("service-worker.js").catch(function(error){
+   console.log("Service worker registration failed:",error);
+  });
+ });
+}
+
+window.addEventListener("load",function(){
+ const isRequest=loadURLRequest();
+ if(isRequest){
+  setTimeout(function(){goToPage(4);},500);
+ }else{
+  setTimeout(function(){openCurtains();},1000);
+ }
+});
+</script>
+</body>
+</html>
